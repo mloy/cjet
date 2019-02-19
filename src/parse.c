@@ -137,14 +137,19 @@ static int parse_json_rpc(const cJSON *request, struct peer *p)
 		response = create_error_response_from_request(p, request, INVALID_REQUEST, "reason", "neither request nor response");
 	}
 
-	return send_response(response, p);
+	int ret = send_response(response, p);
+	if (unlikely(ret == -1)) {
+		log_peer_err(p, "Could not send response!\n");
+	}
+	
+	return ret;
 }
 
 static int parse_json_array(cJSON *root, struct peer *p)
 {
 	unsigned int array_size = cJSON_GetArraySize(root);
 	for (unsigned int i = 0; i < array_size; ++i) {
-		cJSON *sub_item = cJSON_GetArrayItem(root, i);
+		cJSON *sub_item = cJSON_GetArrayItem(root, (int)i);
 		if (likely(sub_item->type == cJSON_Object)) {
 			int ret = parse_json_rpc(sub_item, p);
 			if (unlikely(ret == -1)) {
