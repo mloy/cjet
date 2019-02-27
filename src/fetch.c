@@ -523,7 +523,7 @@ static int add_fetch_to_state_and_notify(const struct peer *p, struct element *e
 			log_peer_err(p, "Can't add fetch to state %s owned by %s", e->path, get_peer_name(e->peer));
 			return -1;
 		}
-		if (unlikely(notify_fetching_peer(e, f, "add", 0) != 0)) {
+		if (unlikely(notify_fetching_peer(e, f, "add", 1) != 0)) {
 			log_peer_err(p, "Can't notify fetching peer for state %s owned by %s", e->path, get_peer_name(e->peer));
 			return -1;
 		}
