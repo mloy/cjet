@@ -87,7 +87,8 @@ static void ws_on_error(struct websocket *ws)
 	got_error = true;
 }
 
-static int writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count)
+_Pragma ("GCC diagnostic ignored \"-Wunused-parameter\"")
+static int writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count, int more)
 {
 	(void)this_ptr;
 	size_t complete_length = 0;

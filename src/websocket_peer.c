@@ -58,7 +58,9 @@
 #define WS_PING_FRAME 0x9
 #define WS_PONG_FRAME 0x0a
 
-static int ws_send_message(const struct peer *p, char *rendered, size_t len)
+
+_Pragma ("GCC diagnostic ignored \"-Wunused-parameter\"")
+static int ws_send_message(const struct peer *p, char *rendered, size_t len, int more)
 {
 	const struct websocket_peer *ws_peer = const_container_of(p, struct websocket_peer, peer);
 	return websocket_send_text_frame(&ws_peer->websocket, rendered, len);

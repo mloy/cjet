@@ -102,7 +102,7 @@ static enum bs_read_callback_return read_msg_length(void *context, uint8_t *buf,
 	return BS_OK;
 }
 
-static int send_message(const struct peer *p, char *rendered, size_t len)
+static int send_message(const struct peer *p, char *rendered, size_t len, int more)
 {
 	if (unlikely(len > UINT32_MAX)) {
 		log_err("Jet message length does not fit into uint32_t!\n");
@@ -117,7 +117,7 @@ static int send_message(const struct peer *p, char *rendered, size_t len)
 	const struct socket_peer *s_peer = const_container_of(p, struct socket_peer, peer);
 
 	const struct buffered_reader *br = &s_peer->br;
-	return br->writev(br->this_ptr, iov, ARRAY_SIZE(iov));
+	return br->writev(br->this_ptr, iov, ARRAY_SIZE(iov), more);
 }
 
 void init_socket_peer(struct socket_peer *p, struct buffered_reader *reader, bool is_local_connection)

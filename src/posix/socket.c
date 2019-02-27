@@ -25,6 +25,7 @@
  */
 
 #include <string.h>
+#include <sys/socket.h>
 #include <sys/uio.h>
 #include <unistd.h>
 
@@ -37,7 +38,7 @@ cjet_ssize_t socket_read(socket_type sock, void *buf, size_t count)
 	return read(sock, buf, count);
 }
 
-cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count)
+cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count, int more)
 {
 	struct iovec iov[count + 1];
 
@@ -57,8 +58,17 @@ _Pragma ("GCC diagnostic ignored \"-Wcast-qual\"")
 		iov[i + 1].iov_base = (void *)io_vec[i].iov_base;
 		iov[i + 1].iov_len = io_vec[i].iov_len;
 	}
+	if (more) {
+		/* we use sendmsg instead of writev because we want to set the flag parameter */
+		struct msghdr msgHdr;
+		memset(&msgHdr, 0, sizeof(msgHdr));
+		msgHdr.msg_iov = iov;
+		msgHdr.msg_iovlen = count;
+		return sendmsg(sock, &msgHdr, MSG_MORE);
+	} else {
 _Pragma ("GCC diagnostic error \"-Wcast-qual\"")
-	return writev(sock, iov, sizeof(iov) / sizeof(struct iovec));
+		return writev(sock, iov, sizeof(iov) / sizeof(struct iovec));
+	}
 }
 
 int socket_close(socket_type sock)

@@ -107,7 +107,8 @@ static cJSON *parse_send_buffer(const char *json)
 	return root;
 }
 
-static int send_message(const struct peer *p, char *rendered, size_t len)
+_Pragma ("GCC diagnostic ignored \"-Wunused-parameter\"")
+static int send_message(const struct peer *p, char *rendered, size_t len, int more)
 {
 	(void)len;
 	if (p == &fetch_peer) {

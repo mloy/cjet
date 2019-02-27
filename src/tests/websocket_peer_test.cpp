@@ -89,7 +89,8 @@ extern "C" {
 		return 0;
 	}
 
-	static int br_writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count)
+_Pragma ("GCC diagnostic ignored \"-Wunused-parameter\"")
+	static int br_writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count, int more)
 	{
 		(void)this_ptr;
 		size_t complete_length = 0;

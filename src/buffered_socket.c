@@ -43,7 +43,7 @@ static int send_buffer(struct buffered_socket *bs)
 {
 	uint8_t *write_buffer_ptr = bs->write_buffer;
 	while (bs->to_write != 0) {
-		cjet_ssize_t written = socket_writev_with_prefix(bs->ev.sock, write_buffer_ptr, bs->to_write, NULL, 0);
+		cjet_ssize_t written = socket_writev_with_prefix(bs->ev.sock, write_buffer_ptr, bs->to_write, NULL, 0, 0);
 
 		if (unlikely(written == -1)) {
 			enum cjet_system_error err = get_socket_error();
@@ -330,7 +330,7 @@ int buffered_socket_close(void *context)
 	return ret;
 }
 
-int buffered_socket_writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count)
+int buffered_socket_writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count, int more)
 {
 	struct buffered_socket *bs = (struct buffered_socket *)this_ptr;
 	size_t to_write = bs->to_write;
@@ -339,7 +339,7 @@ int buffered_socket_writev(void *this_ptr, struct socket_io_vector *io_vec, unsi
 		to_write += io_vec[i].iov_len;
 	}
 
-	cjet_ssize_t sent = socket_writev_with_prefix(bs->ev.sock, bs->write_buffer, bs->to_write, io_vec, count);
+	cjet_ssize_t sent = socket_writev_with_prefix(bs->ev.sock, bs->write_buffer, bs->to_write, io_vec, count, more);
 	if (likely(sent == (cjet_ssize_t)to_write)) {
 		return 0;
 	}

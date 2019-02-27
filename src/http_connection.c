@@ -112,7 +112,7 @@ int send_http_error_response(struct http_connection *connection)
 	iov.iov_len = strlen(response);
 
 	struct buffered_reader *br = &connection->br;
-	return br->writev(br->this_ptr, &iov, 1);
+	return br->writev(br->this_ptr, &iov, 1, 0);
 }
 
 static enum bs_read_callback_return read_start_line(void *context, uint8_t *buf, size_t len)

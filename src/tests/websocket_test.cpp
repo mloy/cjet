@@ -70,7 +70,7 @@ static bool response_parse_error = false;
 static int test_errno;
 
 extern "C" {
-	cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count)
+	cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count, int more)
 	{
 		(void)sock;
 		(void)buf;

@@ -60,7 +60,7 @@ extern "C" {
 	}
 }
 
-int send_message(const struct peer *p, char *rendered, size_t len)
+int send_message(const struct peer *p, char *rendered, size_t len, int)
 {
 	(void)p;
 	memcpy(send_buffer, rendered, len);

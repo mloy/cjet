@@ -591,7 +591,7 @@ static int send_upgrade_response(struct http_connection *connection)
 	iov_length++;
 
 	struct buffered_reader *br = &connection->br;
-	return br->writev(br->this_ptr, iov, iov_length);
+	return br->writev(br->this_ptr, iov, iov_length, 0);
 }
 
 int websocket_upgrade_on_header_field(http_parser *p, const char *at, size_t length)
@@ -985,7 +985,7 @@ static int send_frame(const struct websocket *s, uint8_t *payload, size_t length
 	iov[1].iov_len = length_comp;
 
 	struct buffered_reader *br = &s->connection->br;
-	int ret =  br->writev(br->this_ptr, iov, ARRAY_SIZE(iov));
+	int ret =  br->writev(br->this_ptr, iov, ARRAY_SIZE(iov), 0);
 	if (s->extension_compression.accepted && (type < WS_CLOSE_FRAME)) {
 		free(payload_comp);
 	}

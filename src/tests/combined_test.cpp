@@ -202,7 +202,7 @@ static struct element *get_state(const char *path)
 	return (struct element *)element_table_get(path);
 }
 
-int send_message(const struct peer *p, char *rendered, size_t len)
+int send_message(const struct peer *p, char *rendered, size_t len, int)
 {
 	(void)len;
 	if (p == fetch_peer_1) {

@@ -110,7 +110,7 @@ extern "C" {
 		return complete_length;
 	}
 
-	cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count)
+	cjet_ssize_t socket_writev_with_prefix(socket_type sock, void *buf, size_t len, struct socket_io_vector *io_vec, unsigned int count, int)
 	{
 		switch (sock) {
 		case WRITEV_COMPLETE_WRITE: {
@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(memcmp(write_buffer, send_buffer, strlen(send_buffer)) == 0);
 }
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_inval)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret < 0);
 }
 
@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_part_send_blocks)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(memcmp(write_buffer, send_buffer, writev_parts_cnt) == 0);
 	BOOST_CHECK(memcmp(f.bs->write_buffer, send_buffer + writev_parts_cnt, strlen(send_buffer) - writev_parts_cnt) == 0);
@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_part_send_blocks_first_chunk_sm
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(memcmp(write_buffer, send_buffer, writev_parts_cnt) == 0);
 	BOOST_CHECK(memcmp(f.bs->write_buffer, send_buffer + writev_parts_cnt, strlen(send_buffer) - writev_parts_cnt) == 0);
@@ -521,7 +521,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_blocks)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(memcmp(f.bs->write_buffer, send_buffer, strlen(send_buffer)) == 0);
 }
@@ -535,7 +535,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_blocks_buffer_too_small)
 	struct socket_io_vector vec[1];
 	vec[0].iov_base = buffer;
 	vec[0].iov_len = sizeof(buffer);
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret < 0);
 }
 
@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_blocks_buffer_fits)
 	struct socket_io_vector vec[1];
 	vec[0].iov_base = buffer;
 	vec[0].iov_len = sizeof(buffer);
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(::memcmp(f.bs->write_buffer, buffer, sizeof(buffer)) == 0);
 }
@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_parts_send_single)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(::memcmp(write_buffer, send_buffer, strlen(send_buffer)) == 0);
 }
@@ -585,7 +585,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_parts_send_parts)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(::memcmp(write_buffer, send_buffer, writev_parts_cnt + send_parts_cnt) == 0);
 	BOOST_CHECK(::memcmp(f.bs->write_buffer, send_buffer + writev_parts_cnt + send_parts_cnt, strlen(send_buffer) - writev_parts_cnt - send_parts_cnt) == 0);
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_parts_send_fails)
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret < 0);
 }
 
@@ -623,7 +623,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_parts_send_parts_eventloop_send
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(::memcmp(write_buffer, send_buffer, writev_parts_cnt + send_parts_cnt) == 0);
 	BOOST_CHECK(::memcmp(f.bs->write_buffer, send_buffer + writev_parts_cnt + send_parts_cnt, strlen(send_buffer) - writev_parts_cnt - send_parts_cnt) == 0);
@@ -648,7 +648,7 @@ BOOST_AUTO_TEST_CASE(test_buffered_socket_writev_parts_send_parts_eventloop_send
 	vec[0].iov_len = first_chunk_size;
 	vec[1].iov_base = send_buffer + first_chunk_size;
 	vec[1].iov_len = strlen(send_buffer) - first_chunk_size;
-	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec));
+	int ret = buffered_socket_writev(f.bs, vec, ARRAY_SIZE(vec), 0);
 	BOOST_CHECK(ret == 0);
 	BOOST_CHECK(::memcmp(write_buffer, send_buffer, writev_parts_cnt + send_parts_cnt) == 0);
 	BOOST_CHECK(::memcmp(f.bs->write_buffer, send_buffer + writev_parts_cnt + send_parts_cnt, strlen(send_buffer) - writev_parts_cnt - send_parts_cnt) == 0);

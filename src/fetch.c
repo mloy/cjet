@@ -449,7 +449,7 @@ static int add_fetch_to_state(struct element *e, struct fetch *f)
 }
 
 static int notify_fetching_peer(const struct element *e, const struct fetch *f,
-                                const char *event_name)
+								const char *event_name, int more)
 {
 	cJSON *root = cJSON_CreateObject();
 	if (unlikely(root == NULL)) {
@@ -498,7 +498,7 @@ static int notify_fetching_peer(const struct element *e, const struct fetch *f,
 
 	const struct peer *p = f->peer;
 	if (unlikely(p->send_message(p, rendered_message,
-	                             strlen(rendered_message)) != 0)) {
+								 strlen(rendered_message), more) != 0)) {
 		cjet_free(rendered_message);
 		goto error;
 	}
@@ -523,7 +523,7 @@ static int add_fetch_to_state_and_notify(const struct peer *p, struct element *e
 			log_peer_err(p, "Can't add fetch to state %s owned by %s", e->path, get_peer_name(e->peer));
 			return -1;
 		}
-		if (unlikely(notify_fetching_peer(e, f, "add") != 0)) {
+		if (unlikely(notify_fetching_peer(e, f, "add", 0) != 0)) {
 			log_peer_err(p, "Can't notify fetching peer for state %s owned by %s", e->path, get_peer_name(e->peer));
 			return -1;
 		}
@@ -602,7 +602,7 @@ int notify_fetchers(const struct element *e, const char *event_name)
 	for (unsigned int i = 0; i < e->fetch_table_size; i++) {
 		const struct fetch *f = e->fetcher_table[i];
 		if ((f != NULL) &&
-		    (unlikely(notify_fetching_peer(e, f, event_name) != 0))) {
+			(unlikely(notify_fetching_peer(e, f, event_name, 1) != 0))) {
 			return -1;
 		}
 	}
