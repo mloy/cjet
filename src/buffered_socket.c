@@ -29,6 +29,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <sys/socket.h>
+
 #include "alloc.h"
 #include "buffered_socket.h"
 #include "compiler.h"
@@ -381,6 +383,14 @@ int buffered_socket_writev(void *this_ptr, struct socket_io_vector *io_vec, unsi
 	 */
 	return send_buffer(bs);
 }
+
+
+int buffered_socket_set_sock_opt(void *this_ptr, int level, int optname, const void *optval, socklen_t optlen)
+{
+	struct buffered_socket *bs = (struct buffered_socket *)this_ptr;
+	return setsockopt(bs->ev.sock, level, optname, optval, optlen);
+}
+
 
 int buffered_socket_read_exactly(void *this_ptr, size_t num,
                                  enum bs_read_callback_return (*read_callback)(void *context, uint8_t *buf, size_t len),

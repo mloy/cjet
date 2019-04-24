@@ -39,7 +39,16 @@
 #include "peer.h"
 #include "request.h"
 #include "response.h"
+#include "socket_peer.h"
 #include "json/cJSON.h"
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
+
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
@@ -573,12 +582,21 @@ static int add_fetch_to_states_in_peer(const struct peer *p, struct fetch *f)
 {
 	struct list_head *item;
 	struct list_head *tmp;
+
+	int state;
+	const struct socket_peer *s_peer = const_container_of(p, struct socket_peer, peer);
+	state = 1;
+	s_peer->br.set_sock_opt(s_peer->br.this_ptr, IPPROTO_TCP, TCP_CORK, &state, sizeof(state));
 	list_for_each_safe (item, tmp, &p->element_list) {
 		struct element *e = list_entry(item, struct element, element_list);
-		if (unlikely(add_fetch_to_state_and_notify(p, e, f) != 0)) {
+		int result = add_fetch_to_state_and_notify(p, e, f);
+		
+		if (unlikely(result != 0)) {
 			return -1;
 		}
 	}
+	state = 0;
+	s_peer->br.set_sock_opt(s_peer->br.this_ptr, IPPROTO_TCP, TCP_CORK, &state, sizeof(state));
 
 	return 0;
 }

@@ -29,7 +29,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
+#include <sys/socket.h>
 #include "buffered_socket.h"
 
 #ifdef __cplusplus
@@ -46,6 +46,7 @@ struct buffered_reader {
 	int (*read_until)(void *this_ptr, const char *delim, read_handler handler, void *handler_context);
 	int (*writev)(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count);
 	int (*close)(void *this_ptr);
+	int (*set_sock_opt)(void *this_ptr, int level, int optname, const void *optval, socklen_t optlen);
 	void (*set_error_handler)(void *this_ptr, error_handler handler, void *error_context);
 };
 

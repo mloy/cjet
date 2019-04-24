@@ -135,6 +135,7 @@ void init_socket_peer(struct socket_peer *p, struct buffered_reader *reader, boo
 	br->read_until = reader->read_until;
 	br->set_error_handler = reader->set_error_handler;
 	br->writev = reader->writev;
+	br->set_sock_opt = reader->set_sock_opt;
 
 	br->read_exactly(br->this_ptr, 4, read_msg_length, p);
 }

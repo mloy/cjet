@@ -30,6 +30,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <sys/socket.h>
+
 #include "compiler.h"
 #include "eventloop.h"
 #include "generated/cjet_config.h"
@@ -75,6 +77,7 @@ void buffered_socket_init(struct buffered_socket *bs, socket_type sock, struct e
 int buffered_socket_close(void *context);
 int buffered_socket_writev(void *this_ptr, struct socket_io_vector *io_vec, unsigned int count);
 void buffered_socket_set_error(void *this_ptr, void (*error)(void *error_context), void *error_context);
+int buffered_socket_set_sock_opt(void *this_ptr, int level, int optname, const void *optval, socklen_t optlen);
 
 /**
  * @brief buffered_socket_read_exactly starts an IO operation to read exactly \p num bytes.

@@ -170,6 +170,7 @@ static void handle_new_jet_connection(struct io_event *ev, int fd, bool is_local
 	br.read_until = buffered_socket_read_until;
 	br.set_error_handler = buffered_socket_set_error;
 	br.writev = buffered_socket_writev;
+	br.set_sock_opt = buffered_socket_set_sock_opt;
 
 	init_socket_peer(peer, &br, is_local_connection);
 	return;
