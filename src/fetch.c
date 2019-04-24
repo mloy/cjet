@@ -614,6 +614,7 @@ cJSON *add_fetch_to_states(const struct peer *request_peer, const cJSON *request
 	struct list_head *tmp;
 	const struct list_head *peer_list = get_peer_list();
 	list_for_each_safe (item, tmp, peer_list) {
+		/// \todo unfortunately the fetches are not sorted by peer. Hence we can not easily collect several messages to send in one sitting.
 		const struct peer *p = list_entry(item, struct peer, next_peer);
 		int ret = add_fetch_to_states_in_peer(p, f);
 		if (unlikely(ret != 0)) {
