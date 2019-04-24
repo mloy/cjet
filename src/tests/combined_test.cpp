@@ -202,9 +202,8 @@ static struct element *get_state(const char *path)
 	return (struct element *)element_table_get(path);
 }
 
-int send_message(const struct peer *p, char *rendered, size_t len)
+int send_message(const struct peer *p, char *rendered)
 {
-	(void)len;
 	if (p == fetch_peer_1) {
 		cJSON *fetch_event = parse_send_buffer(rendered);
 		fetch_peer_1_event = get_event_from_json(fetch_event);

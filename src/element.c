@@ -362,8 +362,7 @@ cJSON *set_or_call(const struct peer *p, const cJSON *request, enum type what)
 		goto delete_json;
 	}
 
-	if (unlikely(e->peer->send_message(e->peer, rendered_message,
-	                                   strlen(rendered_message)) != 0)) {
+	if (unlikely(e->peer->send_message(e->peer, rendered_message)!= 0)) {
 		response = create_error_response_from_request(p, request, INTERNAL_ERROR, "reason", "could not send routing information");
 	}
 

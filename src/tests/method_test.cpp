@@ -59,11 +59,10 @@ extern "C" {
 	}
 }
 
-int send_message(const struct peer *p, char *rendered, size_t len)
+int send_message(const struct peer *p, char *rendered)
 {
 	(void)p;
 	(void)rendered;
-	(void)len;
 	return 0;
 }
 

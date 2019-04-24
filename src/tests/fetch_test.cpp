@@ -258,9 +258,8 @@ static void check_invalid_params(const cJSON *response)
 	}
 }
 
-int send_message(const struct peer *p, char *rendered, size_t len)
+int send_message(const struct peer *p, char *rendered)
 {
-	(void)len;
 	if (p == fetch_peer_1) {
 		cJSON *fetch_event = parse_send_buffer(rendered);
 		fetch_events.push_back(fetch_event);

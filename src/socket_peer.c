@@ -102,8 +102,9 @@ static enum bs_read_callback_return read_msg_length(void *context, uint8_t *buf,
 	return BS_OK;
 }
 
-static int send_message(const struct peer *p, char *rendered, size_t len)
+static int send_message(const struct peer *p, char *rendered)
 {
+	size_t len = strlen(rendered);
 	if (unlikely(len > UINT32_MAX)) {
 		log_err("Jet message length does not fit into uint32_t!\n");
 		return -1;

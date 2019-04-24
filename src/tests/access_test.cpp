@@ -107,9 +107,8 @@ static cJSON *parse_send_buffer(const char *json)
 	return root;
 }
 
-static int send_message(const struct peer *p, char *rendered, size_t len)
+static int send_message(const struct peer *p, char *rendered)
 {
-	(void)len;
 	if (p == &fetch_peer) {
 		cJSON *fetch_event = parse_send_buffer(rendered);
 		fetch_events.push_back(fetch_event);

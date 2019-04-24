@@ -497,8 +497,7 @@ static int notify_fetching_peer(const struct element *e, const struct fetch *f,
 	}
 
 	const struct peer *p = f->peer;
-	if (unlikely(p->send_message(p, rendered_message,
-	                             strlen(rendered_message)) != 0)) {
+	if (unlikely(p->send_message(p, rendered_message) != 0)) {
 		cjet_free(rendered_message);
 		goto error;
 	}

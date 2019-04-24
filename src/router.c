@@ -159,7 +159,7 @@ static int format_and_send_response(const struct peer *p, const cJSON *response)
 {
 	char *rendered = cJSON_PrintUnformatted(response);
 	if (likely(rendered != NULL)) {
-		int ret = p->send_message(p, rendered, strlen(rendered));
+		int ret = p->send_message(p, rendered);
 		cjet_free(rendered);
 		return ret;
 	} else {
