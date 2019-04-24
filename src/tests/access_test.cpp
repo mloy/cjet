@@ -107,11 +107,13 @@ static cJSON *parse_send_buffer(const char *json)
 	return root;
 }
 
-static int send_message(const struct peer *p, char *rendered)
+static int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
-	if (p == &fetch_peer) {
-		cJSON *fetch_event = parse_send_buffer(rendered);
-		fetch_events.push_back(fetch_event);
+	for (size_t index = 0; index<count; ++index) {
+		if (p == &fetch_peer) {
+			cJSON *fetch_event = parse_send_buffer(rendered[index]);
+			fetch_events.push_back(fetch_event);
+		}
 	}
 
 	return 0;
@@ -259,9 +261,9 @@ struct F {
 		init_parser();
 		element_hashtable_create();
 		init_peer(&owner_peer, false, &loop);
-		owner_peer.send_message = send_message;
+		owner_peer.send_messages = send_messages;
 		init_peer(&fetch_peer, false, &loop);
-		fetch_peer.send_message = send_message;
+		fetch_peer.send_messages = send_messages;
 
 		cJSON *groups = cJSON_CreateArray();
 		cJSON_AddItemToArray(groups, cJSON_CreateString(admins));

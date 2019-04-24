@@ -121,7 +121,7 @@ struct peer *alloc_peer()
 	p->user_name = NULL;
 	p->is_local_connection = false;
 	p->loop = NULL;
-	p->send_message = NULL;
+	p->send_messages = NULL;
 	return p;
 }
 

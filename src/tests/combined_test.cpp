@@ -202,22 +202,24 @@ static struct element *get_state(const char *path)
 	return (struct element *)element_table_get(path);
 }
 
-int send_message(const struct peer *p, char *rendered)
+int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
-	if (p == fetch_peer_1) {
-		cJSON *fetch_event = parse_send_buffer(rendered);
-		fetch_peer_1_event = get_event_from_json(fetch_event);
-		cJSON_Delete(fetch_event);
-	} else if (p == fetch_peer_2) {
-		cJSON *fetch_event = parse_send_buffer(rendered);
-		fetch_peer_2_event = get_event_from_json(fetch_event);
-		cJSON_Delete(fetch_event);
-	} else if ((p == set_peer) || (p == call_peer)) {
-		handle_message_for_setter_or_caller(rendered);
-	} else if (p == owner_peer) {
-		create_and_send_owner_response(rendered);
-	} else {
-		message_for_wrong_peer = true;
+	for (size_t index=0; index<count; ++index) {
+		if (p == fetch_peer_1) {
+			cJSON *fetch_event = parse_send_buffer(rendered[index]);
+			fetch_peer_1_event = get_event_from_json(fetch_event);
+			cJSON_Delete(fetch_event);
+		} else if (p == fetch_peer_2) {
+			cJSON *fetch_event = parse_send_buffer(rendered[index]);
+			fetch_peer_2_event = get_event_from_json(fetch_event);
+			cJSON_Delete(fetch_event);
+		} else if ((p == set_peer) || (p == call_peer)) {
+			handle_message_for_setter_or_caller(rendered[index]);
+		} else if (p == owner_peer) {
+			create_and_send_owner_response(rendered[index]);
+		} else {
+			message_for_wrong_peer = true;
+		}
 	}
 	return 0;
 }
@@ -242,7 +244,7 @@ struct peer *alloc_peer()
 {
 	struct peer *p = (struct peer *)::malloc(sizeof(*p));
 	init_peer(p, false, &loop);
-	p->send_message = send_message;
+	p->send_messages = send_messages;
 	return p;
 }
 

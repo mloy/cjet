@@ -258,14 +258,16 @@ static void check_invalid_params(const cJSON *response)
 	}
 }
 
-int send_message(const struct peer *p, char *rendered)
+int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
-	if (p == fetch_peer_1) {
-		cJSON *fetch_event = parse_send_buffer(rendered);
-		fetch_events.push_back(fetch_event);
-	} else if (p == owner_peer) {
-		cJSON *response = parse_send_buffer(rendered);
-		owner_responses.push_back(response);
+	for (size_t index=0; index<count; ++index) {
+		if (p == fetch_peer_1) {
+			cJSON *fetch_event = parse_send_buffer(rendered[index]);
+			fetch_events.push_back(fetch_event);
+		} else if (p == owner_peer) {
+			cJSON *response = parse_send_buffer(rendered[index]);
+			owner_responses.push_back(response);
+		}
 	}
 	return 0;
 }
@@ -290,7 +292,7 @@ struct peer *alloc_peer()
 {
 	struct peer *p = (struct peer *)::malloc(sizeof(*p));
 	init_peer(p, false, &loop);
-	p->send_message = send_message;
+	p->send_messages = send_messages;
 	return p;
 }
 

@@ -102,31 +102,59 @@ static enum bs_read_callback_return read_msg_length(void *context, uint8_t *buf,
 	return BS_OK;
 }
 
-static int send_message(const struct peer *p, char *rendered)
+static int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
-	size_t len = strlen(rendered);
-	if (unlikely(len > UINT32_MAX)) {
-		log_err("Jet message length does not fit into uint32_t!\n");
+	struct socket_io_vector iov[8*2];
+	if (count>8) {
 		return -1;
 	}
-	uint32_t message_length = jet_htobe32((uint32_t)len);
-	struct socket_io_vector iov[2];
-	iov[0].iov_base = &message_length;
-	iov[0].iov_len = sizeof(message_length);
-	iov[1].iov_base = rendered;
-	iov[1].iov_len = len;
+
+	size_t len;
+	uint32_t message_length;
+	for (unsigned int index=0; index<count; ++index) {
+		len = strlen(rendered[index]);
+		if (unlikely(len > UINT32_MAX)) {
+			log_err("Jet message length does not fit into uint32_t!\n");
+			return -1;
+		}
+		message_length = jet_htobe32((uint32_t)len);
+		iov[index*2].iov_base = &message_length;
+		iov[index*2].iov_len = sizeof(message_length);
+		iov[index*2+1].iov_base = rendered[index];
+		iov[index*2+1].iov_len = len;
+	}
 	const struct socket_peer *s_peer = const_container_of(p, struct socket_peer, peer);
 
 	const struct buffered_reader *br = &s_peer->br;
-	return br->writev(br->this_ptr, iov, ARRAY_SIZE(iov));
+	return br->writev(br->this_ptr, iov, count*2);
 }
+
+//static int send_message(const struct peer *p, char *rendered)
+//{
+//	size_t len = strlen(rendered);
+//	if (unlikely(len > UINT32_MAX)) {
+//		log_err("Jet message length does not fit into uint32_t!\n");
+//		return -1;
+//	}
+//	uint32_t message_length = jet_htobe32((uint32_t)len);
+//	struct socket_io_vector iov[2];
+//	iov[0].iov_base = &message_length;
+//	iov[0].iov_len = sizeof(message_length);
+//	iov[1].iov_base = rendered;
+//	iov[1].iov_len = len;
+//	const struct socket_peer *s_peer = const_container_of(p, struct socket_peer, peer);
+
+//	const struct buffered_reader *br = &s_peer->br;
+//	return br->writev(br->this_ptr, iov, ARRAY_SIZE(iov));
+//}
 
 void init_socket_peer(struct socket_peer *p, struct buffered_reader *reader, bool is_local_connection)
 {
 	struct buffered_socket *bs = (struct buffered_socket *)reader->this_ptr;
 
 	init_peer(&p->peer, is_local_connection, bs->ev.loop);
-	p->peer.send_message = send_message;
+	//p->peer.send_message = send_message;
+	p->peer.send_messages = send_messages;
 	p->peer.close = close_jet_peer;
 
 	struct buffered_reader *br = &p->br;

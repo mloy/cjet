@@ -58,10 +58,19 @@
 #define WS_PING_FRAME 0x9
 #define WS_PONG_FRAME 0x0a
 
-static int ws_send_message(const struct peer *p, char *rendered)
+static int ws_send_messages(const struct peer *p, char *rendered[], size_t count)
 {
-	const struct websocket_peer *ws_peer = const_container_of(p, struct websocket_peer, peer);
-	return websocket_send_text_frame(&ws_peer->websocket, rendered, strlen(rendered));
+	int bytesSend = 0;
+	int result;
+	for (size_t index=0; index<count; ++index) {
+		const struct websocket_peer *ws_peer = const_container_of(p, struct websocket_peer, peer);
+		result = websocket_send_text_frame(&ws_peer->websocket, rendered[index], strlen(rendered[index]));
+		if (result<0) {
+			return -1;
+		}
+		bytesSend += result;
+	}
+	return bytesSend;
 }
 
 static void free_websocket_peer(struct websocket_peer *ws_peer)
@@ -129,7 +138,7 @@ static int init_websocket_peer(struct websocket_peer *ws_peer, struct http_conne
 	static const char *sub_protocol = "jet";
 
 	init_peer(&ws_peer->peer, is_local_connection, connection->server->ev.loop);
-	ws_peer->peer.send_message = ws_send_message;
+	ws_peer->peer.send_messages = ws_send_messages;
 	ws_peer->peer.close = peer_close_websocket_peer;
 
 	struct buffered_reader *br = &connection->br;

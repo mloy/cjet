@@ -37,10 +37,11 @@
 #include "peer.h"
 
 extern "C" {
-	int send_message(const struct peer *p, char *rendered)
+	int send_messages(const struct peer *p, char *rendered[], size_t count)
 	{
 		(void)p;
 		(void)rendered;
+		(void)count;
 		return 0;
 	}
 
@@ -107,7 +108,7 @@ BOOST_AUTO_TEST_CASE(test_info_without_id)
 BOOST_AUTO_TEST_CASE(create_info)
 {
 	struct peer *p = alloc_peer();
-	p->send_message = send_message;
+	p->send_messages = send_messages;
 	cJSON *json_rpc = create_correct_info_method();
 	cJSON *response = handle_info(json_rpc, p);
 	cJSON_Delete(json_rpc);

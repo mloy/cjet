@@ -47,7 +47,8 @@ struct peer {
 	struct list_head fetch_list;
 	void *routing_table;
 	char *name;
-	int (*send_message)(const struct peer *p, char *rendered);
+	int (*send_messages)(const struct peer *p, char *rendered[], size_t count);
+	//int (*send_message)(const struct peer *p, char *rendered);
 	void (*close)(struct peer *p);
 	struct eventloop *loop;
 	group_t fetch_groups;

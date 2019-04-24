@@ -68,11 +68,13 @@ static cJSON *parse_send_buffer(const char *json)
 	return root;
 }
 
-int send_message(const struct peer *p, char *rendered)
+int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
 	(void)p;
-	cJSON *fetch_event = parse_send_buffer(rendered);
-	events.push_back(fetch_event);
+	for (size_t index=0; index<count; ++index) {
+		cJSON *fetch_event = parse_send_buffer(rendered[index]);
+		events.push_back(fetch_event);
+	}
 	return 0;
 }
 
@@ -104,9 +106,9 @@ struct F {
 
 		init_parser();
 		init_peer(&p, false, &loop);
-		p.send_message = send_message;
+		p.send_messages = send_messages;
 		init_peer(&set_peer, false, &loop);
-		set_peer.send_message = send_message;
+		set_peer.send_messages = send_messages;
 		element_hashtable_create();
 	}
 

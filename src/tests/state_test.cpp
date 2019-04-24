@@ -60,10 +60,12 @@ extern "C" {
 	}
 }
 
-int send_message(const struct peer *p, char *rendered)
+int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
 	(void)p;
-	strcpy(send_buffer, rendered);
+	for (size_t index=0; index<count; ++index) {
+		strcpy(send_buffer, rendered[index]);
+	}
 	return 0;
 }
 
@@ -160,11 +162,11 @@ struct F {
 		init_parser();
 		element_hashtable_create();
 		init_peer(&p, false, &loop);
-		p.send_message = send_message;
+		p.send_messages = send_messages;
 		init_peer(&owner_peer, false, &loop);
-		owner_peer.send_message = send_message;
+		owner_peer.send_messages = send_messages;
 		init_peer(&set_peer, false, &loop);
-		set_peer.send_message = send_message;
+		set_peer.send_messages = send_messages;
 	}
 
 	~F()
@@ -825,7 +827,7 @@ BOOST_FIXTURE_TEST_CASE(set_with_destroy_before_response, F)
 {
 	struct peer setter_peer;
 	init_peer(&setter_peer, false, &loop);
-	setter_peer.send_message = send_message;
+	setter_peer.send_messages = send_messages;
 
 	const char path[] = "/foo/bar/";
 	cJSON *request = create_add(path);

@@ -59,10 +59,11 @@ extern "C" {
 	}
 }
 
-int send_message(const struct peer *p, char *rendered)
+int send_messages(const struct peer *p, char *rendered[], size_t count)
 {
 	(void)p;
 	(void)rendered;
+	(void)count;
 	return 0;
 }
 
@@ -95,9 +96,9 @@ struct F {
 		init_parser();
 		element_hashtable_create();
 		init_peer(&owner_peer, false, &loop);
-		owner_peer.send_message = send_message;
+		owner_peer.send_messages = send_messages;
 		init_peer(&call_peer, false, &loop);
-		call_peer.send_message = send_message;
+		call_peer.send_messages = send_messages;
 	}
 	~F()
 	{
