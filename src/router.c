@@ -190,7 +190,8 @@ static void request_timeout_handler(void *context, bool cancelled)
 
 			cjet_free(request);
 		} else {
-			log_peer_err(request->requesting_peer, "hashtable remove from request_timeout_handler not successful");
+			char* pStr = cJSON_PrintUnformatted(request->origin_request_id);
+			log_peer_err(request->requesting_peer, "request id '%s', origin request id '%s': hashtable remove from request_timeout_handler not successful", request->id, pStr);
 		}
 	}
 }
